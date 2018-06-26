@@ -55,6 +55,7 @@ class report_log_table_log extends table_sql {
      *     - int edulevel: educational level.
      *     - string action: view action
      *     - int date: Date from which logs to be viewed.
+     *     - int date_month: Date from which logs to be viewed.
      */
     public function __construct($uniqueid, $filterparams = null) {
         parent::__construct($uniqueid);
@@ -475,6 +476,16 @@ class report_log_table_log extends table_sql {
             $joins[] = "timecreated > :date AND timecreated < :enddate";
             $params['date'] = $this->filterparams->date;
             $params['enddate'] = $this->filterparams->date + DAYSECS; // Show logs only for the selected date.
+        }elseif(!empty($this->filterparams->date_month)){
+            //Month filter handler
+            //TODO Calcular o endtimemonth baseado no dia inicial e na quantidade de dias do mês
+            $yearOfMonth = userdate($this->filterparams->date_month, '%Y');
+            $monthNumber = userdate($this->filterparams->date_month, '%m');
+            $totalDaysInMonth = days_in_month($monthNumber, $yearOfMonth);
+            $lastDayInMonth = make_timestamp($yearOfMonth, $monthNumber, $totalDaysInMonth);
+            $joins[] = "timecreated >= :date AND timecreated <= :enddate";
+            $params['date'] = $this->filterparams->date_month;
+            $params['enddate'] = $lastDayInMonth;
         }
 
         if (isset($this->filterparams->edulevel) && ($this->filterparams->edulevel >= 0)) {

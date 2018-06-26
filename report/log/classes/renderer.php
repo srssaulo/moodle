@@ -113,7 +113,7 @@ class report_log_renderer extends plugin_renderer_base {
                 $a->url = new moodle_url('/report/log/index.php', array('chooselog' => 0,
                     'group' => $reportlog->get_selected_group(), 'user' => $reportlog->userid,
                     'id' => $selectedcourseid, 'date' => $reportlog->date, 'modid' => $reportlog->modid,
-                    'showcourses' => 1, 'showusers' => $reportlog->showusers));
+                    'showcourses' => 1, 'showusers' => $reportlog->showusers, 'date_month'=>$reportlog->date_month));
                 $a->url = $a->url->out(false);
                 print_string('logtoomanycourses', 'moodle', $a);
             }
@@ -145,7 +145,7 @@ class report_log_renderer extends plugin_renderer_base {
             $a->url = new moodle_url('/report/log/index.php', array('chooselog' => 0,
                 'group' => $reportlog->get_selected_group(), 'user' => $reportlog->userid,
                 'id' => $selectedcourseid, 'date' => $reportlog->date, 'modid' => $reportlog->modid,
-                'showusers' => 1, 'showcourses' => $reportlog->showcourses));
+                'showusers' => 1, 'showcourses' => $reportlog->showcourses,'date_month'=>$reportlog->date_month));
             $a->url = $a->url->out(false);
             echo html_writer::start_span('m-x-1');
             print_string('logtoomanyusers', 'moodle', $a);
@@ -156,6 +156,10 @@ class report_log_renderer extends plugin_renderer_base {
         $dates = $reportlog->get_date_options();
         echo html_writer::label(get_string('date'), 'menudate', false, array('class' => 'accesshide'));
         echo html_writer::select($dates, "date", $reportlog->date, get_string("alldays"));
+        // Add date month selector.
+        $dates_month = $reportlog->get_date_options_month();
+        echo html_writer::label(get_string('date'), 'menudate_month', false, array('class' => 'accesshide'));
+        echo html_writer::select($dates_month, "date_month", $reportlog->date_month, get_string('month'));
 
         // Add activity selector.
         $activities = $reportlog->get_activities_list();

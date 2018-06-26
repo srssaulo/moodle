@@ -32,6 +32,7 @@ $id          = optional_param('id', 0, PARAM_INT);// Course ID.
 $group       = optional_param('group', 0, PARAM_INT); // Group to display.
 $user        = optional_param('user', 0, PARAM_INT); // User to display.
 $date        = optional_param('date', 0, PARAM_INT); // Date to display.
+$date_month  = optional_param('date_month', 0, PARAM_INT); // Date month to display.
 $modid       = optional_param('modid', 0, PARAM_ALPHANUMEXT); // Module id or 'site_errors'.
 $modaction   = optional_param('modaction', '', PARAM_ALPHAEXT); // An action as recorded in the logs.
 $page        = optional_param('page', '0', PARAM_INT);     // Which page to show.
@@ -59,6 +60,9 @@ if ($user !== 0) {
 }
 if ($date !== 0) {
     $params['date'] = $date;
+}
+if ($date_month !== 0) {
+    $params['date_month'] = $date_month;
 }
 if ($modid !== 0) {
     $params['modid'] = $modid;
@@ -149,7 +153,7 @@ if (empty($course) || ($course->id == $SITE->id)) {
 }
 
 $reportlog = new report_log_renderable($logreader, $course, $user, $modid, $modaction, $group, $edulevel, $showcourses, $showusers,
-        $chooselog, true, $url, $date, $logformat, $page, $perpage, 'timecreated DESC', $origin);
+        $chooselog, true, $url, $date, $logformat, $page, $perpage, 'timecreated DESC', $origin, $date_month);
 $readers = $reportlog->get_readers();
 $output = $PAGE->get_renderer('report_log');
 

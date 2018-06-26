@@ -54,6 +54,9 @@ class report_log_renderable implements renderable {
     /** @var int selected date from which records should be displayed */
     public $date;
 
+    /** @var int selected month from which records should be displayed */
+    public $date_month;
+
     /** @var int selected user id for which logs are displayed */
     public $userid;
 
@@ -116,7 +119,7 @@ class report_log_renderable implements renderable {
      */
     public function __construct($logreader = "", $course = 0, $userid = 0, $modid = 0, $action = "", $groupid = 0, $edulevel = -1,
             $showcourses = false, $showusers = false, $showreport = true, $showselectorform = true, $url = "", $date = 0,
-            $logformat='showashtml', $page = 0, $perpage = 100, $order = "timecreated ASC", $origin ='') {
+            $logformat='showashtml', $page = 0, $perpage = 100, $order = "timecreated ASC", $origin ='', $date_month=0) {
 
         global $PAGE;
 
@@ -147,6 +150,7 @@ class report_log_renderable implements renderable {
 
         $this->userid = $userid;
         $this->date = $date;
+        $this->date_month = $date_month;
         $this->page = $page;
         $this->perpage = $perpage;
         $this->url = $url;
@@ -395,7 +399,45 @@ class report_log_renderable implements renderable {
         return $users;
     }
 
+
     /**
+     * function data array select
+     * Return list of date options.
+     *
+     * @return array date options months.
+     */
+    public function get_date_options_month() {
+        global $SITE;
+
+        $strftimedate = get_string("strftimemonthyear");
+
+        // Get all the possible dates.
+        // Note that we are keeping track of real (GMT) time and user time.
+        // User time is only used in displays - all calcs and passing is GMT.
+        $timenow = time(); // GMT.
+        // Put today up the top of the list.
+        $dates = array();
+        // If course is empty, get it from frontpage.
+        $course = $SITE;
+        if (!empty($this->course)) {
+            $course = $this->course;
+        }
+        if (!$course->startdate or ($course->startdate > $timenow)) {
+            $course->startdate = $course->timecreated;
+        }
+        $startDateMonth = userdate($course->startdate, '%m');
+
+        for($i=$startDateMonth;$i<13;$i+=1){
+            $timesFirstDayInMonth = make_timestamp(2018, $i);//pega o primeiro dia do mes em integer timestamp
+            $dates[$timesFirstDayInMonth] =userdate($timesFirstDayInMonth, $strftimedate);
+        }
+        return $dates;
+}
+
+
+
+    /**
+     * function data array select
      * Return list of date options.
      *
      * @return array date options.
@@ -488,6 +530,7 @@ class report_log_renderable implements renderable {
         $filter->edulevel = $this->edulevel;
         $filter->action = $this->action;
         $filter->date = $this->date;
+        $filter->date_month = $this->date_month;
         $filter->orderby = $this->order;
         $filter->origin = $this->origin;
         // If showing site_errors.
