@@ -408,7 +408,7 @@ class report_log_renderable implements renderable {
      */
     public function get_date_options_month() {
         global $SITE;
-
+        
         $strftimedate = get_string("strftimemonthyear");
 
         // Get all the possible dates.
@@ -418,17 +418,29 @@ class report_log_renderable implements renderable {
         // Put today up the top of the list.
         $dates = array();
         // If course is empty, get it from frontpage.
-        $course = $SITE;
-        if (!empty($this->course)) {
+        //$course = $SITE;
+        /*if (!empty($this->course)) {
             $course = $this->course;
-        }
-        if (!$course->startdate or ($course->startdate > $timenow)) {
+        }*/
+        /*if (!$course->startdate or ($course->startdate > $timenow)) {
             $course->startdate = $course->timecreated;
-        }
-        $startDateMonth = userdate($course->startdate, '%m');
+        }*/
+        //$course->startdate  = $timenow;
+        $startDateMonth = userdate($timenow, '%m'); //alteração para pegar meses anteriores do ano atual
 
-        for($i=$startDateMonth;$i<13;$i+=1){
-            $timesFirstDayInMonth = make_timestamp(2018, $i);//pega o primeiro dia do mes em integer timestamp
+        $currentYear = userdate($timenow, '%Y');
+
+        $lastYear = $currentYear -1;
+
+        //fill last year with past months
+        for($i=1;$i<=13;$i+=1){
+            $timesFirstDayInMonthLastYear = make_timestamp($lastYear, $i);//pega o primeiro dia do mes em integer timestamp
+            $dates[$timesFirstDayInMonthLastYear] =userdate($timesFirstDayInMonthLastYear, $strftimedate);
+        }
+
+
+        for($i=$startDateMonth;$i>0;$i-=1){
+            $timesFirstDayInMonth = make_timestamp($currentYear, $i);//pega o primeiro dia do mes em integer timestamp
             $dates[$timesFirstDayInMonth] =userdate($timesFirstDayInMonth, $strftimedate);
         }
         return $dates;
